@@ -1,0 +1,13 @@
+# dev assets
+tests
+data
+
+# virtualenv
+.env
+
+# tox
+.tox
+
+*.md
+*.sh
+*.ini
