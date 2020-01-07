@@ -5,7 +5,6 @@ from datetime import date, datetime
 from bson import ObjectId
 from flask.json import JSONEncoder
 from werkzeug.routing import BaseConverter
-from flask_pymongo import MongoClient
 
 
 class MongoJSONEncoder(JSONEncoder):
@@ -28,20 +27,15 @@ class ObjectIdConverter(BaseConverter):
         return str(value)
 
 
-def find_records(mongo: MongoClient):
+def find_records(mongo):
     return list(mongo.db.record.find({}))
 
 
-def get_record_by_id(mongo: MongoClient, _id: ObjectId):
-
-    # get everything first
-    # all = mongo.db.record.find({})
-    # for item in all:
-    #     print(item)
+def get_record_by_id(mongo, _id):
     query = {"_id": _id}
     results = mongo.db.record.find(query)
     return list(results)
 
 
-def valid_id(_id) -> bool:
+def valid_id(_id):
     return ObjectId.is_valid(_id)

@@ -1,6 +1,7 @@
 # one off scripts
 one.sh
 all.sh
+toxtest.sh
 
 # scratch files
 *.bk
