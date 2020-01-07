@@ -6,7 +6,8 @@ services:
       context: .
       #args:
     environment:
-      MONGO_URI: "mongodb://mongodb:27017/db"
+      # a readWrite user for our application, initialized in the fixture directory
+      MONGO_URI: "mongodb://testuser:testpassword!@mongodb:27017/db"
     volumes:
      - ./assets:/app/assets
     ports:
@@ -19,6 +20,8 @@ services:
     environment:
       # Our app connection string must use these params
       MONGO_INITDB_DATABASE: "db"
+      MONGO_INITDB_ROOT_USERNAME: "mongoadmin"
+      MONGO_INITDB_ROOT_PASSWORD: "secret"
     ports:
       - "27017:27017"
     volumes:

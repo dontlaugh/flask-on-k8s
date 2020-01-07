@@ -34,5 +34,6 @@ def record(record_id):
 
 
 if __name__ == '__main__':
-    # TODO extract into env vars for config
-    app.run(host='0.0.0.0', debug=True, port=8080)
+    debug = os.getenv("DEBUG", "false") in ("1", "true", "T")
+    print("DEBUG", debug)
+    app.run(host='0.0.0.0', debug=debug, port=8080)
