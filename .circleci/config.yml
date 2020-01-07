@@ -1,20 +1,8 @@
-# Python CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-python/ for more details
-#
 version: 2
 jobs:
-  build-python3:
+  tox-tests:
     docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: painless/tox
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
     working_directory: ~/repo
     steps:
       - checkout
@@ -22,7 +10,6 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "requirements.txt" }}
             - v1-dependencies-
-
       - run:
           name: run build and tox
           command: |
@@ -36,8 +23,33 @@ jobs:
             - ./env
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
+  build-container:
+    docker:
+      - image: circleci/python:3.6.1
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 17.09.0-ce
+          docker_layer_caching: true
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-dependencies-
+      - run:
+          name: build container
+          command: |
+            docker build -t quay.io/dontlaugh/flask-on-k8s:${CIRCLE_SHA1}
+
+
 workflows:
   version: 2
   commit:
     jobs:
-      - build-python3
+      - tox-tests
+      - build-container:
+          requires:
+            - tox-tests
+#
+#  master-pr:
+#    jobs:
