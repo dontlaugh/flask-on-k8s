@@ -1,0 +1,27 @@
+version: "3.3"
+
+services:
+  app:
+    build:
+      context: .
+      #args:
+    environment:
+      MONGO_URI: "mongodb://mongodb:27017/db"
+    volumes:
+     - ./assets:/app/assets
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    environment:
+      # Our app connection string must use these params
+      MONGO_INITDB_DATABASE: "db"
+    ports:
+      - "27017:27017"
+    volumes:
+      # Load fixture: The official mongo image passes all .js files in /docker-entrypoint-initdb.d to `mongo` at boot.
+      - ./data:/docker-entrypoint-initdb.d
+

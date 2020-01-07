@@ -1,3 +1,12 @@
+# one off scripts
+one.sh
+all.sh
+
+# scratch files
+*.bk
+TODO.md
+env.sh
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
