@@ -39,7 +39,7 @@ jobs:
       - run:
           name: build container
           command: |
-            docker build -t quay.io/dontlaugh/flask-on-k8s:${CIRCLE_SHA1}
+            docker build -t quay.io/dontlaugh/flask-on-k8s:${CIRCLE_SHA1} .
 
 
 workflows:
