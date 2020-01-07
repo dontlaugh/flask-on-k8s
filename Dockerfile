@@ -1,10 +1,10 @@
-FROM python:3.7-stretch
+FROM  python:3.8.1-alpine
 
 WORKDIR /app
 COPY . /app
 
 RUN pip install -r requirements.txt \
-    && useradd app \
+    && addgroup -S app && adduser -S app \
     && chown -R app:app /app
 
 USER app

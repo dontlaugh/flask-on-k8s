@@ -8,6 +8,7 @@ services:
     environment:
       # a readWrite user for our application, initialized in the fixture directory
       MONGO_URI: "mongodb://testuser:testpassword!@mongodb:27017/db"
+      DEBUG: "false"
     volumes:
      - ./assets:/app/assets
     ports:
