@@ -48,8 +48,7 @@ class TestRecord(TestCase):
     def test_get_record_returns_a_list_filtering(self, mock_record):
         mock_record.side_effect = mock_find_record
         data = backends.mongo.find_records(None, '5df983d2970c93051e784d90')
-        self.assertEqual(dict, type(data))
-        # self.assertEqual(list, type(data))
+        self.assertEqual(list, type(data))
 
     @patch('backends.mongo.find_records')
     def test_get_record_returns_a_unique_element_list(self, mock_record):
