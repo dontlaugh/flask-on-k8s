@@ -31,7 +31,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 17.09.0-ce
-          docker_layer_caching: true
+          docker_layer_caching: false # requires upgraded plan
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "requirements.txt" }}
