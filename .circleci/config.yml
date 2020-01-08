@@ -37,16 +37,29 @@ jobs:
             - v1-dependencies-{{ checksum "requirements.txt" }}
             - v1-dependencies-
       - run:
-          name: build container
+          name: build and push a development version of our app container
           command: |
-            docker build -t quay.io/dontlaugh/flask-on-k8s:${CIRCLE_SHA1} .
+            ./.circleci/quay-login.sh
+            ./.circleci/build-push-commit.sh
 
+  tag-release:
+    docker:
+      - image: circleci/python:3.6.1
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 17.09.0-ce
+          docker_layer_caching: false # requires upgraded plan
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-dependencies-
       - run:
-          name: push container
+          name: build and push a tagged release version of our app container
           command: |
-            docker login -u ${QUAY_USERNAME} -p ${QUAY_PASSWORD} quay.io
-            docker push quay.io/dontlaugh/flask-on-k8s:${CIRCLE_SHA1}
-
+            ./.circleci/quay-login.sh
+            ./.circleci/build-push-tag.sh
 
 workflows:
   version: 2
@@ -56,6 +69,14 @@ workflows:
       - build-container:
           requires:
             - tox-tests
-#
+  tag-release:
+    jobs:
+      - tests-ruby:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\.\d+\.\d+\.\d+$/
+
 #  master-pr:
 #    jobs:
