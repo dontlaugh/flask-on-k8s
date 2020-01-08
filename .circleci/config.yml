@@ -71,7 +71,7 @@ workflows:
             - tox-tests
   tag-release:
     jobs:
-      - tests-ruby:
+      - tag-release:
           filters:
             branches:
               ignore: /.*/
