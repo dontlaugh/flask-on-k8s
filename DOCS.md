@@ -58,9 +58,37 @@ To run unit tests locally, we use tox. This tests against installed interpreters
 tox
 ```
 
-Unit tests can be run in a container, which has all required interpreters pre-installed.
+## Kubernetes
+
+Get an up-to-date kubectl.
 
 ```
-# TODO fix perms
-docker run -it -v $(pwd):/tmp/app -w /tmp/app --rm painless/tox /bin/bash tox
+curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.17.0/bin/linux/amd64/kubectl
+chmod +x kubectl
+mv kubectl ~/bin   # or equivalent
+```
+
+Start minikube
+
+```
+minikube start
+```
+
+Enable addons
+
+```
+minikube addons enable ingress
+minikube addons enable ingress-dns
+```
+
+load secrets and config maps
+
+```
+TODO
+```
+
+deploy with helm
+
+```
+helm install mongodb mongodb
 ```
