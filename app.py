@@ -15,8 +15,6 @@ mongo = PyMongo(app)
 
 @app.route('/api/v1/records', methods=["GET"])
 def records():
-
-    # TODO error handling?
     return jsonify(find_records(mongo))
 
 
@@ -27,7 +25,7 @@ def record(record_id):
         return "bad request", 400
 
     result = get_record_by_id(mongo, record_id)
-    if len(result) is 0:
+    if len(result) == 0:
         return "", 204,
 
     return jsonify(result)
@@ -35,5 +33,4 @@ def record(record_id):
 
 if __name__ == '__main__':
     debug = os.getenv("DEBUG", "false") in ("1", "true", "T")
-    print("DEBUG", debug)
     app.run(host='0.0.0.0', debug=debug, port=8080)

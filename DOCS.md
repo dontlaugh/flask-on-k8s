@@ -56,7 +56,7 @@ To run unit tests locally, we use tox. This tests against installed interpreters
 tox
 ```
 
-## Kubernetes
+## Kubernetes Deployment
 
 Get an up-to-date kubectl.
 
@@ -76,10 +76,9 @@ Enable addons
 
 ```
 minikube addons enable ingress
-minikube addons enable ingress-dns
 ```
 
-load secrets and config maps
+Load secrets and config maps
 
 ```
 kubectl apply -Rf kubernetes/secrets
@@ -92,6 +91,20 @@ deploy with helm
 helm install mongodb kubernetes/charts/mongodb
 helm install app kubernetes/charts/app
 ```
+
+Expose the service to your host for testing
+
+```
+kubectl expose deployment app-deployment --target-port 8080 --type NodePort
+```
+
+Test the exposed port with curl (and jq, if you have it)
+
+```
+curl $(minikube service app --url)/api/v1/records | jq
+```
+
+## Kubernetes Troubleshooting
 
 Test mongo connectivity (via kube DNS) in an ad hoc shell with `kubectl run`
 
