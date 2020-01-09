@@ -89,15 +89,10 @@ We have a local kubernetes setup which requires the following components:
 Other minikube and kubectl versions may work, but helm 3 is required.
 
 
-Start minikube
+Start minikube and enable ingress
 
 ```
 minikube start
-```
-
-Enable addons
-
-```
 minikube addons enable ingress
 ```
 

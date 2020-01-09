@@ -26,6 +26,7 @@ class ObjectIdConverter(BaseConverter):
         try:
             return ObjectId(value)
         except InvalidId:
+            # TODO(cm) how do we jsonify this exception?
             raise BadRequest("invalid object id {}".format(value))
 
     def to_url(self, value):
@@ -38,9 +39,11 @@ def find_records(mongo):
 
 def get_record_by_id(mongo, _id):
     query = {"_id": _id}
-    results = mongo.db.record.find(query)
-    return list(results)
+    result = mongo.db.record.find(query)
+    return result.count(), result
 
 
 def valid_id(_id):
     return ObjectId.is_valid(_id)
+
+

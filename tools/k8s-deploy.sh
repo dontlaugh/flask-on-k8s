@@ -1,10 +1,10 @@
-
+#!/bin/bash
 
 minikube addons enable ingress
 
-kk apply -Rf kubernetes/secrets 
-kk create configmap db-fixture --from-file=data
+kubectl apply -Rf kubernetes/secrets 
+kubectl create configmap db-fixture --from-file=data
 
-helm3 install mongodb kubernetes/charts/mongodb
-helm3 install app kubernetes/charts/app
+helm install mongodb kubernetes/charts/mongodb
+helm install app kubernetes/charts/app
 

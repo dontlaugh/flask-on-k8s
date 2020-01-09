@@ -6,7 +6,7 @@ from bson.objectid import ObjectId
 from mock import patch
 
 
-def mock_find_record(mongo, record_id=None):
+def mock_get_record_by_id(mongo, record_id=None):
     data = [
         {
             "_id": ObjectId("5df983d2970c93051e784d90"),
@@ -33,26 +33,29 @@ def mock_find_record(mongo, record_id=None):
             "recipient": "Vania for Phoenix"
         },
     ]
-    return [record for record in data if record.get('_id') == ObjectId(record_id)]
+    for record in data:
+        if record.get('_id') == ObjectId(record_id):
+            return 1, record
+    return 0, None
 
 
 class TestRecord(TestCase):
 
-    @patch('backends.mongo.find_records')
+    @patch('backends.mongo.get_record_by_id')
     def test_get_record_returns_a_list(self, mock_record):
-        mock_record.side_effect = mock_find_record
-        data = backends.mongo.find_records(None, None)
-        self.assertEqual(list, type(data))
+        mock_record.side_effect = mock_get_record_by_id
+        data = backends.mongo.get_record_by_id(None, None)
+        self.assertEqual(tuple, type(data))
 
-    @patch('backends.mongo.find_records')
+    @patch('backends.mongo.get_record_by_id')
     def test_get_record_returns_a_list_filtering(self, mock_record):
-        mock_record.side_effect = mock_find_record
-        data = backends.mongo.find_records(None, '5df983d2970c93051e784d90')
-        self.assertEqual(list, type(data))
+        mock_record.side_effect = mock_get_record_by_id
+        data = backends.mongo.get_record_by_id(None, '5df983d2970c93051e784d90')
+        self.assertEqual(tuple, type(data))
 
-    @patch('backends.mongo.find_records')
+    @patch('backends.mongo.get_record_by_id')
     def test_get_record_returns_a_unique_element_list(self, mock_record):
-        mock_record.side_effect = mock_find_record
-        data = backends.mongo.find_records(None, '5df983d2970c93051e784d90')
-        self.assertEqual(len(data), 1)
-        self.assertTrue(data[0].get('contributor') == 'Colette Rosati')
+        mock_record.side_effect = mock_get_record_by_id
+        count, data = backends.mongo.get_record_by_id(None, '5df983d2970c93051e784d90')
+        self.assertEqual(count, 1)
+        self.assertTrue(data.get('contributor') == 'Colette Rosati')
