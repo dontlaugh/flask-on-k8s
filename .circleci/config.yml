@@ -73,10 +73,7 @@ workflows:
   # Only runs on semver tag push
   tag-release:
     jobs:
-      - tox-tests
       - tag-release:
-          requires:
-            - tox-tests
           filters:
             branches:
               ignore: /.*/

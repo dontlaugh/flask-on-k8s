@@ -73,9 +73,8 @@ If tests pass, a container is pushed to the Quay.io registry on every git push.
 
 Releases are git tags with a semver structure.
 
-Releases run through the **tag-release** workflow on CircleCI, which also runs 
-tests. In the release workflow, the final container has the semver tag instead 
-of a raw git hash + build number..
+Releases run through the **tag-release** workflow on CircleCI. In the release 
+workflow, the final container has the semver tag instead of a raw git hash + build number.
 
 Release by pushing a tag to GitHub.
 
