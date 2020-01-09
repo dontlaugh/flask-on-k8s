@@ -132,7 +132,13 @@ curl $(minikube service app --url)/api/v1/records | jq
 
 ## Updating the Kubernetes Deployment
 
+Once a new container build has made it to Quay, we can update the `tag` value
+in our app's helm values file **kubernetes/charts/app/values**. Then we can 
+upgrade.
 
+```
+helm upgrade app kubernetes/charts/app
+```
 
 ## Kubernetes Troubleshooting
 

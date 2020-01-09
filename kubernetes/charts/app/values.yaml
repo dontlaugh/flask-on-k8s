@@ -1,1 +1,2 @@
+# when we push a new container, we can add it here
 tag: quay.io/dontlaugh/flask-on-k8s:v1.0.0
