@@ -47,7 +47,7 @@ start that first with docker-compose. Then we run our local app start script.
 
 ```
 docker-compose up -d mongodb
-./tools/run_local.sh
+./tools/run-local.sh
 ```
 
 ## Running Tests
@@ -133,7 +133,7 @@ curl $(minikube service app --url)/api/v1/records | jq
 ## Updating the Kubernetes Deployment
 
 Once a new container build has made it to Quay, we can update the `tag` value
-in our app's helm values file **kubernetes/charts/app/values**. Then we can 
+in our app's helm values file **kubernetes/charts/app/values.yaml**. Then we can 
 upgrade.
 
 ```
