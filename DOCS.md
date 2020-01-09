@@ -48,8 +48,6 @@ docker-compose up -d mongodb
 ./run_local.sh
 ```
 
-
-
 ## Running Tests
 
 To run unit tests locally, we use tox. This tests against installed interpreters.
@@ -84,11 +82,31 @@ minikube addons enable ingress-dns
 load secrets and config maps
 
 ```
-TODO
+kubectl apply -Rf kubernetes/secrets
+kubectl create configmap db-fixture --from-file=data
 ```
 
 deploy with helm
 
 ```
-helm install mongodb mongodb
+helm install mongodb kubernetes/charts/mongodb
+helm install app kubernetes/charts/app
+```
+
+Test mongo connectivity (via kube DNS) in an ad hoc shell with `kubectl run`
+
+```
+kubectl run dnstest -it --image=fedora --rm -- /bin/bash
+dnf install -y dnsutils wget
+wget https://repo.mongodb.org/yum/redhat/8/mongodb-org/4.2/x86_64/RPMS/mongodb-org-shell-4.2.2-1.el8.x86_64.rpm
+rpm -i mongodb-org-shell-4.2.2-1.el8.x86_64.rpm 
+mongo 'mongodb://testuser:testpassword!@mongodb/db'
+```
+
+Once in a mongo shell, switch to our test fixture and query for all records to
+ensure our database fixture has loaded.
+
+```
+> use db
+> db.record.find({})
 ```

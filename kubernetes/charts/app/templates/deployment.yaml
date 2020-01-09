@@ -17,6 +17,17 @@ spec:
       containers:
       - name: app
         image: {{ .Values.tag }}
+        env:
+          - name: MONGO_URI
+            valueFrom:
+              secretKeyRef:
+                name: db-testuser-secret
+                key: mongoUri
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-admin-secret
+                key: rootPassword
         ports:
         - containerPort: 8080
 
