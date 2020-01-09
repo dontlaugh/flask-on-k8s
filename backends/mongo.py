@@ -3,8 +3,10 @@ import isodate as iso
 from datetime import date, datetime
 
 from bson import ObjectId
+from bson.errors import InvalidId
 from flask.json import JSONEncoder
 from werkzeug.routing import BaseConverter
+from flask.helpers import BadRequest
 
 
 class MongoJSONEncoder(JSONEncoder):
@@ -21,18 +23,27 @@ class MongoJSONEncoder(JSONEncoder):
 class ObjectIdConverter(BaseConverter):
 
     def to_python(self, value):
-        return ObjectId(value)
+        try:
+            return ObjectId(value)
+        except InvalidId:
+            # TODO(cm) how do we jsonify this exception?
+            raise BadRequest("invalid object id {}".format(value))
 
     def to_url(self, value):
         return str(value)
 
 
-def find_records(mongo, _id=None):
-    """
-    Get by id AND list all.
-    """
-    query = {}
-    if _id:
-        query['_id'] = ObjectId(_id)
+def find_records(mongo):
+    return list(mongo.db.record.find({}))
 
-    return list(mongo.db.record.find(query))
+
+def get_record_by_id(mongo, _id):
+    query = {"_id": _id}
+    result = mongo.db.record.find(query)
+    return result.count(), result
+
+
+def valid_id(_id):
+    return ObjectId.is_valid(_id)
+
+

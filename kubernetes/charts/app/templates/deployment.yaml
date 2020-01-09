@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  labels:
+    app: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: app
+        image: {{ .Values.tag }}
+        env:
+          - name: MONGO_URI
+            valueFrom:
+              secretKeyRef:
+                name: db-testuser-secret
+                key: mongoUri
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-admin-secret
+                key: rootPassword
+        ports:
+        - containerPort: 8080
+

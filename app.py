@@ -2,10 +2,9 @@ import os
 
 from flask import Flask, jsonify
 from flask_pymongo import PyMongo
+from werkzeug.exceptions import InternalServerError
 
-from backends.mongo import find_records, MongoJSONEncoder, ObjectIdConverter
-
-# export MONGO_URI=mongodb://YOUR_USERNAME:YOUR_PASSWORD@YOUR_MONGO_HOST:YOUR_MONGO_PORT/YOUR_MONGO_DB_NAME
+from backends.mongo import find_records, MongoJSONEncoder, ObjectIdConverter, valid_id, get_record_by_id
 
 app = Flask(__name__)
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
@@ -15,25 +14,22 @@ app.url_map.converters['objectid'] = ObjectIdConverter
 mongo = PyMongo(app)
 
 
-@app.route('/api/v1/records')
+@app.route('/api/v1/records', methods=["GET"])
 def records():
-
-    # TODO error handling?
     return jsonify(find_records(mongo))
 
-
-@app.route('/api/v1/records/<record_id>')
+@app.route('/api/v1/records/<objectid:record_id>', methods=["GET"])
 def record(record_id):
-
-    # TODO error handling?
-
-    result = find_records(mongo, record_id)
-    if len(result) is 0:
-        return "", 204,
-
-    return jsonify(result)
+        count, result = get_record_by_id(mongo, record_id)
+        if count == 0:
+            return "", 204,
+        elif count == 1:
+            return jsonify(result[0])
+        else:
+            # If our query returns more than 1, that seems to be unrecoverable
+            raise InternalServerError
 
 
 if __name__ == '__main__':
-    # TODO extract into env vars for config
-    app.run(host='0.0.0.0', debug=True, port=8080)
+    debug = os.getenv("DEBUG", "false") in ("1", "true", "T")
+    app.run(host='0.0.0.0', debug=debug, port=8080)

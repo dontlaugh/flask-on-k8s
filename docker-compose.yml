@@ -1,0 +1,31 @@
+version: "3.3"
+
+services:
+  app:
+    build:
+      context: .
+      #args:
+    environment:
+      # a readWrite user for our application, initialized in the fixture directory
+      MONGO_URI: "mongodb://testuser:testpassword!@mongodb:27017/db"
+      DEBUG: "false"
+    volumes:
+     - ./assets:/app/assets
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    environment:
+      # Our app connection string must use these params
+      MONGO_INITDB_DATABASE: "db"
+      MONGO_INITDB_ROOT_USERNAME: "mongoadmin"
+      MONGO_INITDB_ROOT_PASSWORD: "secret"
+    ports:
+      - "27017:27017"
+    volumes:
+      # Load fixture: The official mongo image passes all .js files in /docker-entrypoint-initdb.d to `mongo` at boot.
+      - ./data:/docker-entrypoint-initdb.d
+

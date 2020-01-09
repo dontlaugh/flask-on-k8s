@@ -1,0 +1,83 @@
+version: 2
+jobs:
+  tox-tests:
+    docker:
+      - image: painless/tox
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-dependencies-
+      - run:
+          name: run build and tox
+          command: |
+            python3 -m venv .env
+            . .env/bin/activate
+            pip install virtualenv tox
+            tox
+
+      - save_cache:
+          paths:
+            - ./env
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+  build-container:
+    docker:
+      - image: circleci/python:3.6.1
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 17.09.0-ce
+          docker_layer_caching: false # requires upgraded plan
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-dependencies-
+      - run:
+          name: build and push a development version of our app container
+          command: |
+            ./.circleci/quay-login.sh
+            ./.circleci/build-push-commit.sh
+
+  tag-release:
+    docker:
+      - image: circleci/python:3.6.1
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 17.09.0-ce
+          docker_layer_caching: false # requires upgraded plan
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-dependencies-
+      - run:
+          name: build and push a tagged release version of our app container
+          command: |
+            ./.circleci/quay-login.sh
+            ./.circleci/build-push-tag.sh
+
+workflows:
+  version: 2
+  # Runs on every commit
+  commit:
+    jobs:
+      - tox-tests
+      - build-container:
+          requires:
+            - tox-tests
+  # Only runs on semver tag push
+  tag-release:
+    jobs:
+      - tox-tests
+      - tag-release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Match on a semver tag. Example: v0.0.1
+              only: /v[0-9]+\.[0-9]+\.[0-9]+/

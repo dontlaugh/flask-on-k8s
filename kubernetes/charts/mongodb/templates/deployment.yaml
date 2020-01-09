@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-deployment
+  labels:
+    app: mongodb 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: {{ .Values.tag }}
+        volumeMounts:
+          - mountPath: /docker-entrypoint-initdb.d
+            name: db-fixture-volume
+        env:
+          - name: MONGO_INITDB_DATABASE
+            value: "db"
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: db-admin-secret
+                key: rootUsername
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-admin-secret
+                key: rootPassword
+        ports:
+        - containerPort: 27017
+      volumes:
+        - name: db-fixture-volume
+          configMap:
+            name: db-fixture
+            items:
+              - key: 001_testuser.js
+                path: 001_testuser.js
+              - key: 002_initdb.js
+                path: 002_initdb.js
+      
