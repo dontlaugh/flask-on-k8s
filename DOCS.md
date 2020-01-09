@@ -1,36 +1,28 @@
 # flask-on-k8s
 
-Our app.
+A demo flask app with CI/CD, unit tests, and a local Kubernetes deployment.
 
 ## Development Setup
 
-System requirements:
-
-```
-docker
-python3
-docker-compose
-```
-
-Python version: we use tox to invoke our tests from multiple versions. For development you need
-at least one of the python3 interpreters. Others will be skipped. CI will test the rest.
+We use tox to invoke our tests from multiple versions. For development you need
+at least one python3 interpreter. See tox.ini for the supported versions.
 
 Set up a python3 virtual environment locally. We use a folder called **.env**
 
 ```
-python3 -m venv .env
-source .env/bin/activate
+virtualenv -p python3 .venv
+source .venv/bin/activate
 ```
 
 With your environment activated, install the development dependencies.
 
 ```
-pip install tox virtualenv
+pip install tox 
 pip install -r requirements.txt
 pip install -r requirements_dev.txt
 ```
 
-## Running the App
+## Running the App: docker-compose
 
 Running the app via `docker-compose` is a single command.
 
@@ -40,31 +32,62 @@ docker-compose up -d
 
 The API can be should be testable at http://localhost:8080/api/v1/records 
 
+## Running the App: local
+
 Running the app locally still requires the mongo container to be running, so we
-start that first and then run our local app start script.
+start that first with docker-compose. Then we run our local app start script.
 
 ```
 docker-compose up -d mongodb
-./run_local.sh
+./tools/run_local.sh
 ```
 
 ## Running Tests
 
 To run unit tests locally, we use tox. This tests against installed interpreters.
+Others will be skipped. CI will test the rest.
 
 ```
 tox
 ```
 
+## CircleCI
+
+Tests on CircleCI should run in a tox container on every git push.
+
+[The CircleCI project is here](https://circleci.com/gh/dontlaugh/flask-on-k8s)
+
+If tests pass, a container is pushed to the Quay.io registry on every git push.
+
+[The Quay.io container registry is here](https://quay.io/repository/dontlaugh/flask-on-k8s?tab=tags)
+
+## Releases
+
+Releases are git tags with a semver structure.
+
+Releases run through the **tag-release** workflow on CircleCI, which also runs 
+tests. In the release workflow, the final container has the semver tag instead 
+of a raw git hash + build number..
+
+Release by pushing a tag to GitHub.
+
+```
+git tag v0.1.0
+git push --tags
+```
+
+Then wait for tests to pass. Your container will be pushed to Quay.
+
 ## Kubernetes Deployment
 
-Get an up-to-date kubectl.
+We have a local kubernetes setup which requires the following components:
 
-```
-curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.17.0/bin/linux/amd64/kubectl
-chmod +x kubectl
-mv kubectl ~/bin   # or equivalent
-```
+* [minikube 1.6.2](https://kubernetes.io/docs/tasks/tools/install-minikube/)
+* [helm 3](https://helm.sh/docs/intro/install/)
+* [kubectl 1.17.0](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux)
+
+Other minikube and kubectl versions may work, but helm 3 is required.
+
 
 Start minikube
 

@@ -1,3 +1,6 @@
+# binary tools
+tools/bin
+
 # one off scripts
 one.sh
 all.sh

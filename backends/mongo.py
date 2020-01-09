@@ -3,8 +3,10 @@ import isodate as iso
 from datetime import date, datetime
 
 from bson import ObjectId
+from bson.errors import InvalidId
 from flask.json import JSONEncoder
 from werkzeug.routing import BaseConverter
+from flask.helpers import BadRequest
 
 
 class MongoJSONEncoder(JSONEncoder):
@@ -21,7 +23,10 @@ class MongoJSONEncoder(JSONEncoder):
 class ObjectIdConverter(BaseConverter):
 
     def to_python(self, value):
-        return ObjectId(value)
+        try:
+            return ObjectId(value)
+        except InvalidId:
+            raise BadRequest("invalid object id {}".format(value))
 
     def to_url(self, value):
         return str(value)
