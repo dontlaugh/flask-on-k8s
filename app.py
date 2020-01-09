@@ -4,7 +4,7 @@ from flask import Flask, jsonify
 from flask_pymongo import PyMongo
 from werkzeug.exceptions import InternalServerError
 
-from backends.mongo import find_records, MongoJSONEncoder, ObjectIdConverter, valid_id, get_record_by_id
+from backends.mongo import find_records, MongoJSONEncoder, ObjectIdConverter, get_record_by_id
 
 app = Flask(__name__)
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
