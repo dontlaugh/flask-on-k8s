@@ -81,5 +81,5 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              # Match on a semver tag. Example: v0.0.1
+              # Match on a semver tag. Example: v0.0.2
               only: /v[0-9]+\.[0-9]+\.[0-9]+/
