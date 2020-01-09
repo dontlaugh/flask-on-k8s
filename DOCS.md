@@ -32,6 +32,14 @@ docker-compose up -d
 
 The API can be should be testable at http://localhost:8080/api/v1/records 
 
+## Building the App: docker-compose
+
+Rebuild the container on demand with docker-compose.
+
+```
+docker-compose build app
+```
+
 ## Running the App: local
 
 Running the app locally still requires the mongo container to be running, so we
@@ -121,6 +129,10 @@ Test the exposed port with curl (and jq, if you have it)
 ```
 curl $(minikube service app --url)/api/v1/records | jq
 ```
+
+## Updating the Kubernetes Deployment
+
+
 
 ## Kubernetes Troubleshooting
 
