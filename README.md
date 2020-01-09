@@ -47,7 +47,7 @@ start that first with docker-compose. Then we run our local app start script.
 
 ```
 docker-compose up -d mongodb
-./tools/run_local.sh
+./tools/run-local.sh
 ```
 
 ## Running Tests
