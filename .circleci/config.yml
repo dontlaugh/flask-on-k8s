@@ -75,6 +75,8 @@ workflows:
     jobs:
       - tox-tests
       - tag-release:
+          requires:
+            - tox-tests
           filters:
             branches:
               ignore: /.*/
